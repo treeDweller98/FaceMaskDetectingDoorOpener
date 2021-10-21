@@ -22,6 +22,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.CompoundButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -55,14 +56,21 @@ public class MainActivity extends AppCompatActivity {
     private final String PERSON_DETECTED = "11";             // ARDUINO MUST SEND THIS TO TRIGGER CAMERA
     private final String YES_MASKED= "YE";                   // SEND TO ARDUINO TO OPEN DOOR
     private final String NOT_MASKED = "NO";                  // SEND TO ARDUINO TO DENY ENTRY
-    private final int BAUD_RATE = 9600;
-    public final String ACTION_USB_PERMISSION = "com.example.maskapp.USB_PERMISSION";
-    private final int CAMERA_PERM_CODE = 1;
 
+    public final int BAUD_RATE = 9600;
+    public final String ACTION_USB_PERMISSION = "USB_PERMISSION";
+
+    private final int CAMERA_PERM_CODE = 1;
+    private final float REAR_CAM_ROTATE_ANGLE = 90;           // on my redmi note 6 pro
+    private final float FRONT_CAM_ROTATE_ANGLE = -90;           // on my redmi note 6 pro
+
+
+    SurfaceTexture surfaceTexture;
     Camera camera;
     Interpreter tflite;
     ImageProcessor imageProcessor;
     Bitmap bitmap;
+    float rotateAngle;
 
     UsbManager usbManager;
     UsbDevice device;
@@ -159,12 +167,12 @@ public class MainActivity extends AppCompatActivity {
             if(ContextCompat.checkSelfPermission(this,Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED){
                 ActivityCompat.requestPermissions(this, new String[] {Manifest.permission.CAMERA}, CAMERA_PERM_CODE);
             }
-
-            int camChoice = ( cameraSelector.isChecked() ) ? CAMERA_FACING_FRONT : CAMERA_FACING_BACK;
             try {
-                camera = Camera.open( camChoice );
-                camera.setPreviewTexture( new SurfaceTexture(0) );
+                surfaceTexture = new SurfaceTexture(0);
+                camera = Camera.open();     // rear camera is default
+                camera.setPreviewTexture( surfaceTexture );
                 camera.setParameters( camera.getParameters() );
+                rotateAngle = REAR_CAM_ROTATE_ANGLE;
             } catch ( Exception e ) {
                 Log.d("CAMERA", e.getMessage());
                 Toast.makeText( this, "camera could not be opened - restart app" , Toast.LENGTH_LONG ).show();
@@ -183,6 +191,36 @@ public class MainActivity extends AppCompatActivity {
                     .add(new ResizeOp(224, 224, ResizeOp.ResizeMethod.BILINEAR))
                     .build();
         }
+
+        // Camera selector (default is rear, rotate angle 90)
+        cameraSelector.setOnCheckedChangeListener( new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if(isChecked) {
+                    try {
+                        camera.release(); camera = null;
+                        camera = Camera.open( CAMERA_FACING_FRONT );     // open front cam
+                        camera.setPreviewTexture( surfaceTexture );
+                        camera.setParameters( camera.getParameters() );
+                        rotateAngle = FRONT_CAM_ROTATE_ANGLE;
+                    } catch ( Exception e ) {
+                        Log.d("CAMERA", e.getMessage());
+                        Toast.makeText( getBaseContext(), "front camera could not be opened - restart app" , Toast.LENGTH_LONG ).show();
+                    }
+                } else {
+                    try {
+                        camera.release(); camera = null;
+                        camera = Camera.open( CAMERA_FACING_BACK );     // open rear cam
+                        camera.setPreviewTexture( surfaceTexture );
+                        camera.setParameters( camera.getParameters() );
+                        rotateAngle = REAR_CAM_ROTATE_ANGLE;
+                    } catch ( Exception e ) {
+                        Log.d("CAMERA", e.getMessage());
+                        Toast.makeText( getBaseContext(), "rear camera could not be opened - restart app" , Toast.LENGTH_LONG ).show();
+                    }
+                }
+            }
+        });
 
         // Take photo and run inference on click
         detectButton.setOnClickListener( new View.OnClickListener() {
@@ -226,15 +264,15 @@ public class MainActivity extends AppCompatActivity {
     Camera.PictureCallback jpegCallback = new Camera.PictureCallback() {
         public void onPictureTaken(final byte[] data, Camera camera) {
             bitmap = BitmapFactory.decodeByteArray( data, 0, data.length  );
-            bitmap = rotateImage( bitmap, 90 );
+            bitmap = rotateImage( bitmap, rotateAngle );
             imageView.setImageBitmap( bitmap );
 
             if ( doInference() ) {
                 Toast.makeText( getBaseContext(), "MASK YAY UwU" , Toast.LENGTH_LONG ).show();
-                if ( serialPort.isOpen() ) serialPort.write( YES_MASKED.getBytes() );
+                if ( serialPort != null && serialPort.isOpen() ) serialPort.write( YES_MASKED.getBytes() );
             } else {
                 Toast.makeText( getBaseContext(), "MASK NAY TwT" , Toast.LENGTH_LONG ).show();
-                if ( serialPort.isOpen() ) serialPort.write( NOT_MASKED.getBytes() );
+                if ( serialPort != null && serialPort.isOpen() ) serialPort.write( NOT_MASKED.getBytes() );
             }
         }
     };

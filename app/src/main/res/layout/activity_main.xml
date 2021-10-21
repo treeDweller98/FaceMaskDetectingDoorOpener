@@ -18,7 +18,7 @@
         android:id="@+id/detect"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="16dp"
+        android:layout_marginBottom="32dp"
         android:text="Detect (manual trigger)"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -34,19 +34,21 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/image"
-        app:layout_constraintVertical_bias="1.0" />
+        app:layout_constraintVertical_bias="0.927" />
 
     <TextView
         android:id="@+id/textView"
-        android:layout_width="101dp"
-        android:layout_height="28dp"
+        android:layout_width="340dp"
+        android:layout_height="94dp"
         android:text="TextView"
+        android:textAlignment="center"
+        android:textAllCaps="false"
         app:layout_constraintBottom_toTopOf="@+id/arduinoConnectBtn"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.498"
+        app:layout_constraintHorizontal_bias="0.492"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/image"
-        app:layout_constraintVertical_bias="0.89" />
+        app:layout_constraintVertical_bias="1.0" />
 
     <ToggleButton
         android:id="@+id/cameraToggle"
