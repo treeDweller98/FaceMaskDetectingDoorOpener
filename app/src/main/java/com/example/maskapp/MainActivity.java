@@ -53,9 +53,9 @@ import java.util.Map;
 
 public class MainActivity extends AppCompatActivity {
 
-    private final String PERSON_DETECTED = "11";             // ARDUINO MUST SEND THIS TO TRIGGER CAMERA
-    private final String YES_MASKED= "YE";                   // SEND TO ARDUINO TO OPEN DOOR
-    private final String NOT_MASKED = "NO";                  // SEND TO ARDUINO TO DENY ENTRY
+    private final byte PERSON_DETECTED = 84;             // 'T' ARDUINO MUST SEND THIS TO TRIGGER CAMERA
+    private final byte YES_MASKED= 89;                   // 'Y' SEND TO ARDUINO TO OPEN DOOR
+    private final byte NOT_MASKED = 78;                  // 'N' SEND TO ARDUINO TO DENY ENTRY
 
     public final int BAUD_RATE = 9600;
     public final String ACTION_USB_PERMISSION = "USB_PERMISSION";
@@ -87,17 +87,23 @@ public class MainActivity extends AppCompatActivity {
     UsbSerialInterface.UsbReadCallback mCallback = new UsbSerialInterface.UsbReadCallback() { //Defining a Callback which triggers whenever data is read.
         @Override
         public void onReceivedData(byte[] arg0) {
+            byte data = arg0[0] ;
+            if ( data == PERSON_DETECTED ) {
+                detectButton.performClick();        // i.e. when IR detects person
+            } else {
+                Toast.makeText( getBaseContext(), "Corrupt data returned by Arduino" + data, Toast.LENGTH_LONG ).show();
+            }
+            /*
             String data = null;
             try {
                 data = new String( arg0, "UTF-8" );
-
-                if ( data.equals( PERSON_DETECTED ) ) {
+                if ( data[0].equals( PERSON_DETECTED ) ) {
                     detectButton.performClick();        // i.e. when IR detects person
                 }
             } catch (UnsupportedEncodingException e) {
                 e.printStackTrace();
                 Toast.makeText( getBaseContext(), "Corrupt data returned by Arduino" , Toast.LENGTH_LONG ).show();
-            }
+            }*/
         }
     };
 
@@ -268,11 +274,17 @@ public class MainActivity extends AppCompatActivity {
             imageView.setImageBitmap( bitmap );
 
             if ( doInference() ) {
-                Toast.makeText( getBaseContext(), "MASK YAY UwU" , Toast.LENGTH_LONG ).show();
-                if ( serialPort != null && serialPort.isOpen() ) serialPort.write( YES_MASKED.getBytes() );
+                Toast.makeText( getBaseContext(), "Positive detection" , Toast.LENGTH_LONG ).show();
+                if ( serialPort != null && serialPort.isOpen() ) {
+                    serialPort.write( new byte[]{YES_MASKED} );
+                    Toast.makeText( getBaseContext(), "SENT MASK YAY UwU" , Toast.LENGTH_LONG ).show();
+                }
             } else {
-                Toast.makeText( getBaseContext(), "MASK NAY TwT" , Toast.LENGTH_LONG ).show();
-                if ( serialPort != null && serialPort.isOpen() ) serialPort.write( NOT_MASKED.getBytes() );
+                Toast.makeText( getBaseContext(), "Negative detection" , Toast.LENGTH_LONG ).show();
+                if ( serialPort != null && serialPort.isOpen() ) {
+                    serialPort.write( new byte[]{NOT_MASKED} );
+                    Toast.makeText( getBaseContext(), "SENT MASK NAY TwT" , Toast.LENGTH_LONG ).show();
+                }
             }
         }
     };
