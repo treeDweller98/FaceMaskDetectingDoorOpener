@@ -1,0 +1,13 @@
+<component name="libraryTable">
+  <library name="Gradle: org.tensorflow:tensorflow-lite-metadata:0.3.1">
+    <CLASSES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.tensorflow/tensorflow-lite-metadata/0.3.1/29078cda7878cd79096fd198a52fa64cc3c63d17/tensorflow-lite-metadata-0.3.1.jar!/" />
+    </CLASSES>
+    <JAVADOC>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.tensorflow/tensorflow-lite-metadata/0.3.1/76552ba62ae683e6046ef6c42f2ff2c9f64afce7/tensorflow-lite-metadata-0.3.1-javadoc.jar!/" />
+    </JAVADOC>
+    <SOURCES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.tensorflow/tensorflow-lite-metadata/0.3.1/76552ba62ae683e6046ef6c42f2ff2c9f64afce7/tensorflow-lite-metadata-0.3.1-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>
