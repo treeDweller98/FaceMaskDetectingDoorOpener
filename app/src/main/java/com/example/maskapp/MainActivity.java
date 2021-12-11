@@ -171,17 +171,10 @@ public class MainActivity extends AppCompatActivity {
 
     /** Receives data from Arduino and triggers action */
     UsbSerialInterface.UsbReadCallback mCallback = new UsbSerialInterface.UsbReadCallback() {
-        //Defining a Callback which triggers whenever data is read.
         @Override
         public void onReceivedData( byte[] arg0 ) {
-            String data = null;
-            try {
-                data = new String( arg0, "UTF-8" );
-                tvAppend( statusText, data + " raw: " + arg0 + "\n" );
+            if ( arg0[0] == PERSON_DETECTED )
                 onClickDetect( detectButton );
-            } catch (UnsupportedEncodingException e) {
-                e.printStackTrace();
-            }
         }
     };
 
@@ -191,7 +184,7 @@ public class MainActivity extends AppCompatActivity {
             bitmap = BitmapFactory.decodeByteArray( data, 0, data.length  );
             bitmap = rotateImage( bitmap, rotateAngle );
             imageView.setImageBitmap( bitmap );
-            sendDoorSignal();
+            sendDoorSignal( doInference() );
         }
     };
 
@@ -265,18 +258,18 @@ public class MainActivity extends AppCompatActivity {
         serialPort.close();
         tvAppend( statusText,"\nSerial Connection Closed! \n");
     }
-    public void sendDoorSignal() {
-        if ( doInference() ) {
-            Toast.makeText( getBaseContext(), "Positive detection" , Toast.LENGTH_LONG ).show();
+    public void sendDoorSignal( boolean inferenceResult ) {
+        if ( inferenceResult ) {
+            Toast.makeText( getBaseContext(), "Mask Detected..." , Toast.LENGTH_LONG ).show();
             if ( serialPort != null && serialPort.isOpen() ) {
                 serialPort.write( new byte[]{YES_MASKED} );
-                Toast.makeText( getBaseContext(), "SENT MASK YAY UwU" , Toast.LENGTH_LONG ).show();
+                Toast.makeText( getBaseContext(), "Opening door" , Toast.LENGTH_LONG ).show();
             }
         } else {
-            Toast.makeText( getBaseContext(), "Negative detection" , Toast.LENGTH_LONG ).show();
+            Toast.makeText( getBaseContext(), "No Mask..." , Toast.LENGTH_LONG ).show();
             if ( serialPort != null && serialPort.isOpen() ) {
                 serialPort.write( new byte[]{NOT_MASKED} );
-                Toast.makeText( getBaseContext(), "SENT MASK NAY TwT" , Toast.LENGTH_LONG ).show();
+                Toast.makeText( getBaseContext(), "Access Denied" , Toast.LENGTH_LONG ).show();
             }
         }
     }
