@@ -10,8 +10,7 @@ The Android device's camera is triggered and the photo taken is fed into a tenso
 Based on the inference result, the appropriate instruction is passed to the Arduino to either:
     (a) Display a welcome message on the LCD and open the door.
         or
-    (b) Display a message requesting them to wear a mask, and then recheck every 5 seconds 
-        as long as they are around.
+    (b) Display a message requesting them to wear a mask.
         
 The model has been trained using a dataset by github user prajnasb.        
 
