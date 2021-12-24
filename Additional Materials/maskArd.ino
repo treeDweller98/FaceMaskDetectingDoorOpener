@@ -8,7 +8,7 @@ int const proxS = 8;
 char const TAKE_PIC = 84;	// 'T'
 char const MASK_YES = 89;	// 'Y'
 char const MASK_NO = 78; 	// 'N'
-
+int  const DOOR_OPEN_TIME = 2000;	// Time door remains open
 bool waitingForInference = false;
 char recByte = NULL;
 
@@ -52,7 +52,7 @@ void loop() {
       lcd.setCursor(0,0); lcd.print( "unknown signal:" ); lcd.print( recByte ); 
     }
     
-    delay( 2000 );	// allow person to enter / clear the doorway
+    delay( DOOR_OPEN_TIME );	// allow person to enter / clear the doorway
     
     digitalWrite( ledAccept, LOW );
     digitalWrite( ledReject, LOW );
