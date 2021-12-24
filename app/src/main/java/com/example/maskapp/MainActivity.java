@@ -65,6 +65,7 @@ public class MainActivity extends AppCompatActivity {
     private final float REAR_CAM_ROTATE_ANGLE = 90;             // on my redmi note 6 pro
     private final float FRONT_CAM_ROTATE_ANGLE = -90;           // on my redmi note 6 pro
     private final int ARDUINO_VID = 0x1A86;                           // my CH340 nano v3
+    private final int ARDUINO_VID2 = 0x2341;                          // ordinary arduinos hopefully
 
     SurfaceTexture surfaceTexture;
     Camera camera;
@@ -239,7 +240,7 @@ public class MainActivity extends AppCompatActivity {
             for (Map.Entry<String, UsbDevice> entry : usbDevices.entrySet()) {
                 device = entry.getValue();
                 int deviceVID = device.getVendorId();
-                if ( deviceVID == ARDUINO_VID )
+                if ( deviceVID == ARDUINO_VID || deviceVID == ARDUINO_VID2 )
                 {
                     PendingIntent pi = PendingIntent.getBroadcast(this, 0, new Intent(ACTION_USB_PERMISSION), 0);
                     usbManager.requestPermission(device, pi);
