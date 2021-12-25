@@ -1,3 +1,5 @@
 https://www.tinkercad.com/things/4zt2Wq7kbsV-cse216l-project-mask-detecting-door-opener
 
-Note that we have used a PIR sensor here, as that is the only thing available in tinkercad. Code has been modified to digitalRead( proxS ) == HIGH instead of LOW. Actual arduino project uses an active IR sensor which is low when triggered.
+Note that we have used a PIR sensor here, as that is the only thing available in tinkercad.
+Code has been modified to digitalRead( proxS ) == HIGH instead of LOW. 
+Actual arduino project uses an active IR sensor which is low when triggered.
