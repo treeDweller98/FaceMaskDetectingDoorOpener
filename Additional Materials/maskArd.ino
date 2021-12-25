@@ -34,7 +34,7 @@ void loop() {
   if ( waitingForInference == true && Serial.available() ) {
     lcd.clear();
     
-  	recByte = Serial.read();
+    recByte = Serial.read();
     
     if ( recByte == MASK_YES ) {	// mask detected
       digitalWrite( ledAccept, HIGH );
@@ -64,7 +64,7 @@ void loop() {
   }
   
   if ( waitingForInference == false && digitalRead( proxS ) == LOW ) {
-	Serial.write( TAKE_PIC );
+    Serial.write( TAKE_PIC );
     waitingForInference = true;
 
     lcd.setCursor(0,0); lcd.print( "No Mask No Entry" );
